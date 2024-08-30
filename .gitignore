@@ -7,6 +7,4 @@ build_release.sh
 .vscode
 .idea
 logs
-!vendor/
-vendor/*
-!vendor/victorwitkamp/
+vendor

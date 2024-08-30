@@ -1,0 +1,3 @@
+[submodule "vendor/victorwitkamp/shieldon"]
+	path = vendor/victorwitkamp/shieldon
+	url = https://github.com/victorwitkamp/shieldon
