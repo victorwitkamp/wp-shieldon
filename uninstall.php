@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Uninstall WP Shieldon plugin
  *
@@ -51,7 +52,7 @@ foreach ( $options_names as $option_name ) {
 $shieldon_dir = WP_CONTENT_DIR . '/uploads/wp-shieldon';
 
 if ( file_exists( $shieldon_dir ) ) {
-	$it    = new RecursiveDirectoryIterator( $shieldon_dir, RecursiveDirectoryIterator::SKIP_DOTS );
+	$it    = new RecursiveDirectoryIterator( $shieldon_dir, FilesystemIterator::SKIP_DOTS );
 	$files = new RecursiveIteratorIterator( $it, RecursiveIteratorIterator::CHILD_FIRST );
 
 	foreach ( $files as $file ) {

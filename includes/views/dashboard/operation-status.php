@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
 	die;
 }
@@ -187,7 +188,7 @@ if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
 					<i class="fas fa-undo-alt"></i>
 				</button>
 			</div>
-			<table id="wpso-datalog-<?php echo $i; ?>" class="so-datalog cell-border compact stripe responsive" cellspacing="0" width="100%">
+			<table id="wpso-datalog-<?php echo $i; ?>" class="so-datalog cell-border compact stripe responsive">
 				<thead>
 					<tr>
 						<th><?php _e( 'IP', 'wp-shieldon' ); ?></th>
@@ -205,14 +206,10 @@ if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
 						</td>
 						<td><?php echo $ip_info['ip_resolve']; ?></td>
 						<td>
-		<?php if ( ! empty( $type_mapping[ $ip_info['type'] ] ) ) : ?>
-			<?php echo $type_mapping[ $ip_info['type'] ]; ?>
-							<?php endif; ?>
+			<?php echo $ip_info['type']; ?>
 						</td>
 						<td>
-		<?php if ( ! empty( $reason_mapping[ $ip_info['reason'] ] ) ) : ?>
-			<?php echo $reason_mapping[ $ip_info['reason'] ]; ?>
-							<?php endif; ?>
+			<?php echo $ip_info['reason']; ?>
 						</td>
 						<td><?php echo wp_date( 'Y-m-d H:i:s', $ip_info['time'] ); ?></td>
 					</tr>

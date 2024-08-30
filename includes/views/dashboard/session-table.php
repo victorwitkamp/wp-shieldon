@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
 	die;
 }
@@ -36,7 +37,7 @@ $timezone = wpso_apply_blog_timezone();
 			</div>
 			<div class="board-field right">
 				<div class="heading"><?php _e( 'Period', 'wp-shieldon' ); ?></div>
-				<div class="nums"><?php echo number_format( $session_limit_period ); ?></div>
+				<div class="nums"><?php echo number_format( (int) $session_limit_period ); ?></div>
 				<div class="note"><?php _e( 'Keep-alive period. (minutes)', 'wp-shieldon' ); ?></div>
 			</div>
 		</div>

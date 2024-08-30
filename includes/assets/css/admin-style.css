@@ -1,3 +1,15 @@
+.form-table td {
+    margin-bottom: 0px;
+    padding: 0px;
+    line-height: 1.3;
+    vertical-align: middle;
+}
+#wpbody-content {
+    padding-bottom: 40px;
+}
+#wpbody-content .metabox-holder {
+     padding-top: 0px;
+}
 .wpmd {
   display: block;
   margin-top: 10px;
@@ -74,9 +86,9 @@
   line-height: inherit;
 }
 
-.wp-shieldon-admin .metabox-holder {
+/* .wp-shieldon-admin .metabox-holder {
   padding: 10px 20px 20px 20px;
-}
+} */
 .wp-shieldon-admin input, .wp-shieldon-admin textarea, .wp-shieldon-admin select {
   border: 1px #dddddd solid;
 }
@@ -93,8 +105,8 @@
   position: relative;
   width: 100%;
   margin: 0;
-  padding-top: 10px;
-  padding-bottom: 20px;
+  /* padding-top: 10px;
+  padding-bottom: 20px; */
   padding-right: 15px;
   padding-left: 15px;
 }
@@ -235,7 +247,7 @@ code.tips {
 }
 
 .wpso-datatable-heading {
-  margin: 20px 0 20px;
+  /* margin: 20px 0 20px; */
   font-weight: bold;
   border-left: 9px #00b38a solid;
   padding-left: 15px;
@@ -641,7 +653,7 @@ code.tips {
 .filter-status .nums {
   font-size: 28px;
   font-weight: bold;
-  padding: 10px 0;
+  /* padding: 10px 0; */
   color: #222222;
 }
 .filter-status .note {

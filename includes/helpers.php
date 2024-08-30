@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Global helper functions.
  *
@@ -52,7 +53,6 @@ function wpso_set_option( string $option, string $section, string $value ):void 
  */
 function wpso_load_view( string $template_path, array $data = array() ): string {
 	$view_file_path = SHIELDON_PLUGIN_DIR . 'includes/views/' . $template_path . '.php';
-
 	if ( ! empty( $data ) ) {
 		// phpcs:ignore
 		extract( $data );
@@ -62,20 +62,9 @@ function wpso_load_view( string $template_path, array $data = array() ): string 
 
 		ob_start();
 		require $view_file_path;
-		$result = ob_get_contents();
-		ob_end_clean();
-		return $result;
+		return ob_get_clean();
 	}
 	return '';
-}
-
-/**
- * Load plugin textdomain.
- *
- * @return void
- */
-function wpso_load_textdomain(): void {
-	load_plugin_textdomain( SHIELDON_PLUGIN_TEXT_DOMAIN, false, SHIELDON_PLUGIN_LANGUAGE_PACK );
 }
 
 /**
@@ -107,20 +96,11 @@ function wpso_is_driver_hash(): bool {
 }
 
 /**
- * Get lang code.
- *
- * @return string
- */
-function wpso_get_lang(): string {
-	return get_option( 'wpso_lang_code', 'en_US' );
-}
-
-/**
  * Set driver hash.
  *
  * @return string
  */
-function wpso_set_driver_hash() {
+function wpso_set_driver_hash(): string {
 	$wpso_driver_hash = wp_hash( wp_date( 'ymdhis' ) . wp_rand( 1, 86400 ) );
 	$wpso_driver_hash = substr( $wpso_driver_hash, 0, 8 );
 
@@ -134,7 +114,7 @@ function wpso_set_driver_hash() {
  *
  * @return string
  */
-function wpso_get_upload_dir() {
+function wpso_get_upload_dir(): string {
 	return WP_CONTENT_DIR . '/uploads/wp-shieldon/' . wpso_get_driver_hash();
 }
 
@@ -143,7 +123,7 @@ function wpso_get_upload_dir() {
  *
  * @return string
  */
-function wpso_get_logs_dir() {
+function wpso_get_logs_dir(): string {
 	return wpso_get_upload_dir() . '/' . wpso_get_channel_id() . '_logs';
 }
 
@@ -161,7 +141,7 @@ function wpso_set_channel_id() {
  *
  * @return string
  */
-function wpso_get_channel_id() {
+function wpso_get_channel_id(): string {
 	return get_option( 'wpso_channel_id' );
 }
 
@@ -172,29 +152,39 @@ function wpso_get_channel_id() {
  *
  * @return bool
  */
-function wpso_test_driver( string $type = '' ): bool {
+function wpso_test_driver( string $type = null ): bool {
+
+	$drivers = PDO::getAvailableDrivers();
+	if ( $type === 'mysql' || $type === 'sqlite' ) {
+		if ( ! class_exists( 'PDO' ) ) {
+			error_log( 'Shieldon - PDO class does not exist' );
+			return false;
+		}
+		if ( ! in_array( $type, $drivers, true ) ) {
+			return false;
+		}
+	}
 
 	if ( 'mysql' === $type ) {
-		if ( class_exists( 'PDO' ) ) {
-			$db = array(
-				'host'    => DB_HOST,
-				'dbname'  => DB_NAME,
-				'user'    => DB_USER,
-				'pass'    => DB_PASSWORD,
-				'charset' => DB_CHARSET,
-			);
+		$db = array(
+			'host'    => DB_HOST,
+			'dbname'  => DB_NAME,
+			'user'    => DB_USER,
+			'pass'    => DB_PASSWORD,
+			'charset' => DB_CHARSET,
+		);
 
-			try {
-				// phpcs:ignore
-				new \PDO(
-					'mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'] . ';charset=' . $db['charset'],
-					$db['user'],
-					$db['pass']
-				);
-				return true;
-			} catch ( \PDOException $e ) {
-				error_log( $e->getMessage() );
-			}
+		try {
+			// phpcs:ignore
+			new \PDO(
+				'mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'] . ';charset=' . $db['charset'],
+				$db['user'],
+				$db['pass']
+			);
+			return true;
+		} catch ( Exception $e ) {
+			error_log( 'Shieldon - Error - Test driver mysql failed:' . $e->getMessage() );
+			error_log( 'Shieldon - ' . $e->getTraceAsString() );
 		}
 	}
 
@@ -206,19 +196,20 @@ function wpso_test_driver( string $type = '' ): bool {
 		if ( ! file_exists( $sqlite_file_path ) ) {
 			if ( ! is_dir( $sqlite_dir ) ) {
 				$original_umask = umask( 0 );
-				@mkdir( $sqlite_dir, 0777, true );
+				if ( ! mkdir( $sqlite_dir, 0777, true ) && ! is_dir( $sqlite_dir ) ) {
+					throw new RuntimeException( sprintf( 'Directory "%s" was not created', $sqlite_dir ) );
+				}
 				umask( $original_umask );
 			}
 		}
 
-		if ( class_exists( 'PDO' ) ) {
-			try {
-				// phpcs:ignore
-				new \PDO( 'sqlite:' . $sqlite_file_path );
-				return true;
-			} catch ( \PDOException $e ) {
-				error_log( $e->getMessage() );
-			}
+		try {
+			// phpcs:ignore
+			new \PDO( 'sqlite:' . $sqlite_file_path );
+			return true;
+		} catch ( Exception $e ) {
+			error_log( 'Shieldon - Error - Test driver sqlite failed:' . $e->getMessage() );
+			error_log( 'Shieldon - ' . $e->getTraceAsString() );
 		}
 	}
 
@@ -227,7 +218,9 @@ function wpso_test_driver( string $type = '' ): bool {
 
 		if ( ! is_dir( $file_dir ) ) {
 			$original_umask = umask( 0 );
-			@mkdir( $file_dir, 0777, true );
+			if ( ! mkdir( $file_dir, 0777, true ) && ! is_dir( $file_dir ) ) {
+				throw new RuntimeException( sprintf( 'Directory "%s" was not created', $file_dir ) );
+			}
 			umask( $original_umask );
 		}
 
@@ -240,10 +233,11 @@ function wpso_test_driver( string $type = '' ): bool {
 		if ( class_exists( 'Redis' ) ) {
 			try {
 				$redis = new \Redis();
-				$redis->connect( '127.0.0.1', 6379 );
+				$redis->connect( '127.0.0.1' );
 				return true;
-			} catch ( \RedisException $e ) {
-				error_log( $e->getMessage() );
+			} catch ( Exception $e ) {
+				error_log( 'Shieldon - Error - Test driver redis failed:' . $e->getMessage() );
+				error_log( 'Shieldon - ' . $e->getTraceAsString() );
 			}
 		}
 	}
@@ -251,33 +245,7 @@ function wpso_test_driver( string $type = '' ): bool {
 	return false;
 }
 
-/**
- * Show header on setting pages.
- *
- * @return void
- */
-function wpso_show_settings_header(): void {
-	$git_url_core   = 'https://github.com/terrylinooo/shieldon';
-	$git_url_plugin = 'https://github.com/terrylinooo/wp-shieldon';
 
-	echo '<div class="shieldon-info-bar">';
-	echo '	<div class="logo-info"><img src="' . SHIELDON_PLUGIN_URL . 'includes/assets/images/logo.png" class="shieldon-logo"></div>';
-	echo '	<div class="version-info">';
-	echo '    Core: <a href="' . $git_url_core . '" target="_blank">' . SHIELDON_CORE_VERSION . '</a>  ';
-	echo '    Plugin: <a href="' . $git_url_plugin . '" target="_blank">' . SHIELDON_PLUGIN_VERSION . '</a>  ';
-	echo '  </div>';
-	echo '</div>';
-	echo '<div class="wrap">';
-}
-
-/**
- * Show footer on setting pages.
- *
- * @return void
- */
-function wpso_show_settings_footer(): void {
-	echo '</div>';
-}
 
 /**
  * Make the date to be displayed with the blog's timezone setting.
@@ -287,23 +255,23 @@ function wpso_show_settings_footer(): void {
 function wpso_apply_blog_timezone(): string {
 	$timezone_string = get_option( 'timezone_string' );
 
-	if ( $timezone_string ) {
-		// phpcs:ignore
-		date_default_timezone_set( $timezone_string );
+	//  if ( $timezone_string ) {
+	//		// phpcs:ignore
+	//		date_default_timezone_set( $timezone_string );
 
-	} else {
-		$offset = get_option( 'gmt_offset' );
-		if ( $offset ) {
-			$seconds = round( $offset ) * 3600;
+	//  } else {
+	//      $offset = (int) get_option( 'gmt_offset' );
+	//      if ( $offset ) {
+	//          $seconds = (int) round( $offset ) * 3600;
 
-			$timezone_string = timezone_name_from_abbr( '', $seconds, 1 );
+	//          $timezone_string = timezone_name_from_abbr( '', $seconds, 1 );
 
-			if ( false === $timezone_string ) {
-				$timezone_string = timezone_name_from_abbr( '', $seconds, 0 );
-			}
-			// phpcs:ignore
-			date_default_timezone_set( $timezone_string );
-		}
-	}
+	//          if ( false === $timezone_string ) {
+	//              $timezone_string = timezone_name_from_abbr( '', $seconds, 0 );
+	//          }
+	//			// phpcs:ignore
+	//			date_default_timezone_set( $timezone_string );
+	//      }
+	//  }
 	return $timezone_string;
 }

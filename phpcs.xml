@@ -2,6 +2,7 @@
 <ruleset name="WordPress Coding Standards for Plugins">
 	<description>Generally-applicable sniffs for WordPress plugins</description>
 
+<!--    <rule ref="WordPress"/>-->
 	<rule ref="WordPress-Core">
 		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar" />
 		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop" />
@@ -9,11 +10,20 @@
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 		<exclude name="Squiz.Commenting.FileComment.Missing" />
+		<exclude name="WordPress.Files.FileName"/>
+        <exclude name="WordPress.NamingConventions.ValidVariableName" />
+        <exclude name="WordPress.NamingConventions.ValidFunctionName" />
+        <exclude name="Generic.ControlStructures.DisallowYodaConditions" />
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax" />
+    </rule>
+    <rule ref="PSR12">
+        <exclude name="Generic.WhiteSpace.DisallowTabIndent"/>
 	</rule>
 	<rule ref="WordPress-Docs" />
 
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/logs/*</exclude-pattern>
 	<rule ref="Generic.WhiteSpace.ScopeIndent">
 		<properties>
 		    <property name="indent" value="4" />

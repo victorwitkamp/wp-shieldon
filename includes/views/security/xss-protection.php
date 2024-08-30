@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
 	die;
 }

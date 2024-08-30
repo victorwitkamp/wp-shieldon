@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
 	die;
 }
@@ -20,21 +21,20 @@ if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
  * @param int    $icon_type The type of icon.
  * @return string
  */
-function wpso_status_icon( $var, $icon_type = 1 ) {
+function wpso_status_icon( $var, $icon_type = 1 ): ?string {
 
 	if ( 1 === $icon_type ) {
 		if ( ! empty( $var ) ) {
 			return '<i class="far fa-play-circle"></i>';
 		}
 		return '<i class="far fa-stop-circle"></i>';
-	}
-
-	if ( 2 === $icon_type ) {
+	} elseif ( 2 === $icon_type ) {
 		if ( ! empty( $var ) ) {
 			return '<i class="far fa-check-circle"></i>';
 		}
 		return '<i class="far fa-circle"></i>';
 	}
+	return null;
 }
 
 ?>
@@ -234,7 +234,7 @@ function wpso_status_icon( $var, $icon_type = 1 ) {
 				<div class="filter-status">
 					<div class="heading"><?php _e( 'reCAPTCHA', 'wp-shieldon' ); ?></div>
 					<div class="nums">
-						<?php echo wpso_status_icon( $captcha['recaptcha'] ); ?>
+						<?php echo wpso_status_icon( $captcha['ReCaptcha'] ); ?>
 					</div>
 					<div class="note"><?php _e( 'Provided by Google.', 'wp-shieldon' ); ?></div>
 				   
@@ -244,7 +244,7 @@ function wpso_status_icon( $var, $icon_type = 1 ) {
 				<div class="filter-status">
 					<div class="heading"><?php _e( 'Image Captcha', 'wp-shieldon' ); ?></div>
 					<div class="nums">
-						<?php echo wpso_status_icon( $captcha['imagecaptcha'] ); ?>
+						<?php echo wpso_status_icon( $captcha['ImageCaptcha'] ); ?>
 					</div>
 					<div class="note"><?php _e( 'A simple text-in-image CAPTCHA.', 'wp-shieldon' ); ?></div>
 				</div>
@@ -258,33 +258,16 @@ function wpso_status_icon( $var, $icon_type = 1 ) {
 			<?php _e( 'Messenger Modules', 'Messenger Modules' ); ?>
 		</div>
 		<div class="row">
+		<?php foreach ($messengers as $k => $v) { ?>
 			<div class="col-sm-3">
 				<div class="filter-status">
-					<div class="heading"><?php _e( 'Telegram', 'wp-shieldon' ); ?></div>
+					<div class="heading"><?php echo $k; ?></div>
 					<div class="nums">
-						<?php echo wpso_status_icon( $messengers['telegram'] ); ?>
+						<?php echo wpso_status_icon( $v ); ?>
 					</div>
-					<div class="note"><?php _e( 'Send notifications to your Telegram channel.', 'wp-shieldon' ); ?></div>
 				</div>
 			</div>
-			<div class="col-sm-3">
-				<div class="filter-status">
-					<div class="heading"><?php _e( 'Line Notify', 'wp-shieldon' ); ?></div>
-					<div class="nums">
-						<?php echo wpso_status_icon( $messengers['linenotify'] ); ?>
-					</div>
-					<div class="note"><?php _e( 'Send notifications to your LINE group.', 'wp-shieldon' ); ?></div>
-				</div>
-			</div>
-			<div class="col-sm-3">
-				<div class="filter-status">
-					<div class="heading"><?php _e( 'SendGrid', 'wp-shieldon' ); ?></div>
-					<div class="nums">
-						<?php echo wpso_status_icon( $messengers['sendgrid'] ); ?>
-					</div>
-					<div class="note"><?php _e( 'Send notifications to your email using the SendGrid API.', 'wp-shieldon' ); ?></div>
-				</div>
-			</div>
+		<?php } ?>
 		</div>
 	</div>
 </div>

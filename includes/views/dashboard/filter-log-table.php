@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
 	die;
 }
@@ -82,7 +83,7 @@ $timezone = wpso_apply_blog_timezone();
 			</thead>
 			<tbody>
 				<?php foreach ( $ip_log_list as $ip_info ) : ?>
-					<?php $log_data = is_array( $ip_info['log_data'] ) ? $ip_info['log_data'] : json_decode( $ip_info['log_data'], true ); ?>
+					<?php $log_data = is_array( $ip_info['log_data'] ) ? $ip_info['log_data'] : json_decode( $ip_info['log_data'], true, 512, JSON_THROW_ON_ERROR ); ?>
 					<?php
 
 					$text_warning = '';

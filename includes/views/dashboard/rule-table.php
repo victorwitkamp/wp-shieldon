@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
 	die;
 }
@@ -60,6 +61,7 @@ $timezone = wpso_apply_blog_timezone();
 					<th><?php _e( 'Type', 'wp-shieldon' ); ?></th>
 					<th><?php _e( 'Reason', 'wp-shieldon' ); ?></th>
 					<th><?php _e( 'Time', 'wp-shieldon' ); ?></th>
+					<th><?php _e( 'Attempts', 'wp-shieldon' ); ?></th>
 					<th><?php _e( 'Remove', 'wp-shieldon' ); ?></th>
 				</tr>
 			</thead>
@@ -70,19 +72,20 @@ $timezone = wpso_apply_blog_timezone();
 					<td><?php echo $ip_info['ip_resolve']; ?></td>
 					<td>
 					<?php
-					if ( ! empty( $type_mapping[ $ip_info['type'] ] ) ) {
-						echo $type_mapping[ $ip_info['type'] ];
-					}
+					echo $ip_info['type'];
 					?>
 					</td>
 					<td>
 					<?php
-					if ( ! empty( $reason_mapping[ $ip_info['reason'] ] ) ) {
-						echo $reason_mapping[ $ip_info['reason'] ];
-					}
+					echo $ip_info['reason'];
 					?>
 					</td>
 					<td><?php echo wp_date( 'Y-m-d H:i:s', $ip_info['time'] ); ?></td>
+					<td>
+					<?php
+					echo $ip_info['attempts'];
+					?>
+					</td>
 					<td>
 						<button type="button" class="button btn-remove-ip" data-ip="<?php echo $ip_info['log_ip']; ?>">
 							<i class="far fa-trash-alt"></i>

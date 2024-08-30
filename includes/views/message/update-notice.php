@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
 	die;
 }
@@ -12,7 +13,7 @@ if ( ! defined( 'SHIELDON_PLUGIN_NAME' ) ) {
  * @since 1.0.0
  * @version 1.0.0
  */
-$php_version = phpversion();
+$php_version = PHP_VERSION;
 ?>
 
 <div class="notice notice-success is-dismissible">
